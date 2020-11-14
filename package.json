@@ -1,8 +1,8 @@
 {
   "name": "cs499-nuzum-stocks-api",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "A NestJS Implementation of the Stocks API from SNHU CS340",
+  "author": "Barrett W Nuzum <barrett.nuzum@snhu.edu>",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -29,7 +29,8 @@
     "mongoose": "^5.10.14",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.6.3"
+    "rxjs": "^6.6.3",
+    "swagger-ui-express": "^4.1.4"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.1",
