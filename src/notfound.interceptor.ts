@@ -7,11 +7,12 @@ import {
   Optional,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { defaultIfEmpty, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 /**
- * TODO PROPERLY ATTRIBUTE
- * https://stackoverflow.com/a/60669415
+ * Based on
+ * Lafarie, M. (2020) Decorator to return not found in a
+ *          NestJS Controller [Source code]. https://stackoverflow.com/a/60669415
  */
 @Injectable()
 export class NotFoundInterceptor implements NestInterceptor {
