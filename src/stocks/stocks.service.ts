@@ -11,16 +11,30 @@ export class StocksService {
 
   async get(searchTicker: string): Promise<Stock> {
     return await this.stockModel
-      .findOne({
-        Ticker: searchTicker,
-      })
+      .findOne(this.getTickerFilter(searchTicker))
       .exec();
   }
 
   async create(ticker: string): Promise<Stock> {
-    const stockDoc = new Stock({
+    const stockDoc = this.getTickerFilter(ticker);
+    return await this.stockModel.create(stockDoc, {});
+  }
+
+  async update(ticker: string, stock: Stock): Promise<Stock> {
+    return await this.stockModel
+      .update(this.getTickerFilter(ticker), stock)
+      .exec();
+  }
+
+  async delete(ticker: string) {
+    return await this.stockModel
+      .findOneAndDelete(this.getTickerFilter(ticker))
+      .exec();
+  }
+
+  private getTickerFilter(ticker: string) {
+    return new Stock({
       Ticker: ticker,
     });
-    return await this.stockModel.create(stockDoc);
   }
 }
