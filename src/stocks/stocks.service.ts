@@ -16,4 +16,11 @@ export class StocksService {
       })
       .exec();
   }
+
+  async create(ticker: string): Promise<Stock> {
+    const stockDoc = new Stock({
+      Ticker: ticker,
+    });
+    return await this.stockModel.create(stockDoc);
+  }
 }

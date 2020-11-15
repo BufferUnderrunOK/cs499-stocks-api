@@ -10,7 +10,9 @@ async function bootstrap() {
 
   const options = new DocumentBuilder()
     .setTitle(APP_NAME)
-    .setDescription(`The ${APP_NAME} API description`)
+    .setDescription(
+      "Full stack conversion of CS340's Stock API from python to NestJS",
+    )
     .setVersion(APP_VERSION)
     .build();
   const document = SwaggerModule.createDocument(app, options);
