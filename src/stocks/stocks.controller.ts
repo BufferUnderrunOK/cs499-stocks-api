@@ -10,8 +10,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiAcceptedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { NotFoundInterceptor } from 'src/notfound.interceptor';
-import { Stock } from 'src/schemas/stock.schema';
+import { NotFoundInterceptor } from '../notfound.interceptor';
+import { Stock } from '../schemas/stock.schema';
 import { StocksService } from './stocks.service';
 
 const prefixSpecified = 'stocks/api/v1.0';
