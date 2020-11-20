@@ -11,8 +11,7 @@ export class StocksService {
 
   async get(searchTicker: string): Promise<Stock> {
     return await this.stockModel
-      .findOne(this.getTickerFilter(searchTicker))
-      .exec();
+      .findOne(this.getTickerFilter(searchTicker));
   }
 
   async create(ticker: string): Promise<Stock> {
@@ -22,14 +21,12 @@ export class StocksService {
 
   async update(ticker: string, stock: Stock): Promise<Stock> {
     return await this.stockModel
-      .update(this.getTickerFilter(ticker), stock)
-      .exec();
+      .update(this.getTickerFilter(ticker), stock);
   }
 
   async delete(ticker: string) {
     return await this.stockModel
-      .findOneAndDelete(this.getTickerFilter(ticker))
-      .exec();
+      .findOneAndDelete(this.getTickerFilter(ticker));
   }
 
   private getTickerFilter(ticker: string) {
