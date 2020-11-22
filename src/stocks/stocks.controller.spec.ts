@@ -1,4 +1,4 @@
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Stock } from '../schemas/stock.schema';
 import { StocksController } from './stocks.controller';
@@ -51,8 +51,20 @@ describe('StocksController', () => {
   });
 
   it('should call service update on update', async () => {
+    mockService.isDifference.mockReturnValue(true);
     await controller.update('foobar', stock);
     expect(mockService.update).toHaveBeenCalled();
+  });
+
+  it('should NOT call service update if not modified', async () => {
+    mockService.isDifference.mockReturnValue(false);
+    try {
+        await controller.update('foobar', stock);
+    } catch (ex) {
+      expect(ex).toBeInstanceOf(HttpException);
+      expect(ex.status).toBe(HttpStatus.NOT_MODIFIED);      
+    } 
+    expect(mockService.create).not.toHaveBeenCalled();
   });
 
   it('should call service delete on delete', async () => {

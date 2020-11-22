@@ -21,7 +21,7 @@ export class StocksService {
 
   async update(ticker: string, stock: Stock): Promise<Stock> {    
     return await this.stockModel
-      .updateOne(this.getTickerFilter(ticker), stock);
+      .update(this.getTickerFilter(ticker), stock);
   }
 
   async delete(ticker: string) {
