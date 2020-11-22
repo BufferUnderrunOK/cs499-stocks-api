@@ -19,14 +19,28 @@ export class StocksService {
     return await this.stockModel.create(stockDoc, {});
   }
 
-  async update(ticker: string, stock: Stock): Promise<Stock> {
+  async update(ticker: string, stock: Stock): Promise<Stock> {    
     return await this.stockModel
-      .update(this.getTickerFilter(ticker), stock);
+      .updateOne(this.getTickerFilter(ticker), stock);
   }
 
   async delete(ticker: string) {
     return await this.stockModel
       .findOneAndDelete(this.getTickerFilter(ticker));
+  }
+
+  /**
+   * Determines if there is a property on an incoming Stock that is new or different from an existing one
+   * @param existing must be a Stock retrieved from MongoDB through Mongoose
+   * @param stock payload coming in from controller
+   */
+  isDifference(existing: Stock, stock: Stock): boolean {
+    const existingDoc = existing as StockDocument;    
+    for (let [key, value] of Object.entries(stock)) {
+    if(!existingDoc[key] || value !== existingDoc[key]) {
+        return true;
+      }
+    }
   }
 
   private getTickerFilter(ticker: string) {

@@ -4,6 +4,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -57,6 +60,15 @@ export class StocksController {
     @Param('ticker') ticker: string,
     @Body() stock: Stock,
   ): Promise<Stock> {
+    const existing = await this.stocksService.get(ticker.trim());
+    if (!existing) {
+      throw new NotFoundException();
+    }
+        
+    if (!this.stocksService.isDifference(existing, stock)) {
+      throw new HttpException('Not Modified', HttpStatus.NOT_MODIFIED);
+    }
+
     return await this.stocksService.update(ticker, stock);
   }
 
