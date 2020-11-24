@@ -7,7 +7,7 @@ import { StocksModule } from './stocks/stocks.module';
     MongooseModule.forRootAsync({
       useFactory: async () => ({
         uri: process.env.MONGO_URL || 'mongodb://localhost/market',
-        loggerLevel: process.env.LOG_LEVEL || 'info',
+        loggerLevel: process.env.LOG_LEVEL || 'ERROR',
         useNewUrlParser: true,
         useUnifiedTopology: true,
       })
