@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { StocksModule } from './stocks/stocks.module';
 
 @Module({
   imports: [
-    MongooseModule.forRootAsync({
-      useFactory: async () => ({
-        uri: process.env.MONGO_URL || 'mongodb://localhost/market',
-        loggerLevel: process.env.LOG_LEVEL || 'ERROR',
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+    TypeOrmModule.forRootAsync({
+      name: 'default',
+      useFactory: () => ({
+        type: ('mongodb' as 'mongodb'),
+        url: process.env.MONGO_URL || 'mongodb://localhost/market',
+        loggerLevel: 'error',
+        entities: ["dist/**/*.entity{.ts,.js}"],
       })
     }),
     StocksModule

@@ -1,36 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Stock, StockDocument } from '../schemas/stock.schema';
+import { Stock } from '../entities/stock.entity'
+import { Connection, getMongoRepository, MongoRepository } from 'typeorm';
+import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class StocksService {
-  constructor(
-    @InjectModel(Stock.name) private stockModel: Model<StockDocument>,
-  ) { }
+  repository: MongoRepository<Stock>;
+  
+  constructor(@InjectConnection() private readonly connection: Connection
+  ) {
+    this.repository = connection.getMongoRepository(Stock);
+  }
 
   async get(searchTicker: string): Promise<Stock> {
-    return await this.stockModel
+    return await this.repository
       .findOne(this.getTickerFilter(searchTicker));
   }
 
   async create(ticker: string): Promise<Stock> {
     const stockDoc = this.getTickerFilter(ticker);
-    return await this.stockModel.create(stockDoc, {});
+    return await this.repository.create(stockDoc);
   }
 
   async update(ticker: string, stock: Stock): Promise<Stock> {
-    return await this.stockModel
-      .update(this.getTickerFilter(ticker), stock);
+    const result = await this.repository
+      .findOneAndUpdate(this.getTickerFilter(ticker), stock, {returnOriginal: true});
+      return result.value;
   }
 
   async delete(ticker: string) {
-    return await this.stockModel
+    return await this.repository
       .findOneAndDelete(this.getTickerFilter(ticker));
   }
 
   async countBySector(sector: string) {
-    return await this.stockModel.aggregate([{
+    return await this.repository.aggregate([{
       "$match": {
         "Sector": sector
       }
@@ -47,7 +51,7 @@ export class StocksService {
   }
 
   async retrieveSummaries(tickerSymbols: string[]) : Promise<Stock[]> {
-    return await this.stockModel.aggregate<Stock>([
+    return await this.repository.aggregateEntity([
       {
         "$match": {
           "Ticker": { $in: tickerSymbols }
@@ -59,11 +63,11 @@ export class StocksService {
           "Ticker": 1
         }
       }
-    ]);
+    ]).toArray();
   }
 
   async retrieveTopFiveForIndustry(industry: string) : Promise<Stock[]> {
-    return await this.stockModel.aggregate([
+    return await this.repository.aggregateEntity([
         { 
             "$match" : { 
                 "Industry" : new RegExp(industry, 'i')
@@ -73,8 +77,11 @@ export class StocksService {
             "$sort" : { 
                 "Market Cap" : -1.0
             }
+        },
+        {
+          "$limit": 5.0
         }
-    ]);
+    ]).toArray();
   }
 
   /**
@@ -83,7 +90,7 @@ export class StocksService {
    * @param stock payload coming in from controller
    */
   isDifference(existing: Stock, stock: Stock): boolean {
-    const existingDoc = existing as StockDocument;
+    const existingDoc = existing as Stock;
     for (let [key, value] of Object.entries(stock)) {
       if (!existingDoc[key] || value !== existingDoc[key]) {
         return true;
@@ -91,9 +98,9 @@ export class StocksService {
     }
   }
 
-  private getTickerFilter(ticker: string) {
+  private getTickerFilter(tickerSymbol: string) {
     return new Stock({
-      Ticker: ticker,
+      ticker: tickerSymbol,
     });
   }
 }

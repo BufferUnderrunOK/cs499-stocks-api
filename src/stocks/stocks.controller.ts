@@ -18,7 +18,7 @@ import {
 } from '@nestjs/common';
 import { ApiAcceptedResponse, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { NotFoundInterceptor } from '../notfound.interceptor';
-import { Stock } from '../schemas/stock.schema';
+import { Stock } from '../entities/stock.entity';
 import { StocksService } from './stocks.service';
 
 const prefixSpecified = 'stocks/api/v1.1';
@@ -87,11 +87,6 @@ export class StocksController {
     return await this.stocksService.delete(ticker);
   }
 
-  /**  ##
-  # Select and present specific stock summary information by a user-derived list of ticker symbols.
-  # http://[hostname]/stocks/api/v1.0/stockReport 
-  # list of ticker symbols from data provided with the request, e.g. { list=[AA,BA,T].)
-  ## */
   @Post('stockReport')
   @ApiOperation({
     operationId: 'stockReport',
@@ -104,18 +99,16 @@ export class StocksController {
     return await this.stocksService.retrieveSummaries(list);
   }
 
-  /** ##
-  # Report a portfolio of five top stocks by a user-derived industry selection. 
-  # example: http://[hostname]/stocks/api/v1.0/industryReport/telecom  
-  ##
-  @stocks_app.route('/industryReport/<industry>', method='GET')
-  def industryReport(industry):
-    result = service.retrieve_top_five_for_industry(industry)
-  
-    if not result or result == 'null' or result is []:
-      abort(404, "No stocks found")
-  
-    response.status = 200
-    return json_util.dumps(result, indent=4)
-  }*/
+  @Post('industryReport/:industry')
+  @ApiOperation({
+    operationId: 'industryReport',
+    summary: 'Report a portfolio of five top stocks by a user-derived industry selection.',
+    description: StocksController.REPORTING,    
+  })
+  async industryReport(
+    @Param('industry') industry: string
+  ): Promise<Stock[]> {
+    return await this.stocksService.retrieveTopFiveForIndustry(industry);
+  }
+
 }
