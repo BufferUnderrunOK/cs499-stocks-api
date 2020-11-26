@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Stock } from '../entities/stock.entity'
-import { Connection, getMongoRepository, MongoRepository } from 'typeorm';
+import { Connection, getMongoRepository, MongoRepository, Repository } from 'typeorm';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class StocksService {
-  repository: MongoRepository<Stock>;
   
-  constructor(@InjectConnection() private readonly connection: Connection
+  constructor(@InjectRepository(Stock) private readonly repository: MongoRepository<Stock>
   ) {
-    this.repository = connection.getMongoRepository(Stock);
   }
 
-  async get(searchTicker: string): Promise<Stock> {
+  async find(searchTicker: string): Promise<Stock> {
     return await this.repository
       .findOne(this.getTickerFilter(searchTicker));
   }
@@ -28,26 +26,27 @@ export class StocksService {
       return result.value;
   }
 
-  async delete(ticker: string) {
-    return await this.repository
+  async delete(ticker: string): Promise<number> {
+    let result = await this.repository
       .findOneAndDelete(this.getTickerFilter(ticker));
+      return result.ok;
   }
 
   async countBySector(sector: string) {
     return await this.repository.aggregate([{
       "$match": {
-        "Sector": sector
+        "Sector": new RegExp(sector, 'i')
       }
     },
     {
       "$group": {
         "_id": "$Industry",
-        "total_outstanding_shares": {
+        "totalOutstandingShares": {
           "$sum": "$Shares Outstanding"
         }
       }
     }
-    ]);
+    ]).toArray();
   }
 
   async retrieveSummaries(tickerSymbols: string[]) : Promise<Stock[]> {

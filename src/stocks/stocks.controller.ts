@@ -39,7 +39,7 @@ export class StocksController {
     description: StocksController.BASIC_CRUD,
   })
   async read(@Param('ticker') ticker: string): Promise<Stock> {
-    return await this.stocksService.get(ticker);
+    return await this.stocksService.find(ticker);
   }
 
   @Post('stock/:ticker')
@@ -49,7 +49,7 @@ export class StocksController {
     description: StocksController.BASIC_CRUD,
   })
   async create(@Param('ticker') ticker: string): Promise<Stock> {
-    const existing = await this.stocksService.get(ticker.trim());
+    const existing = await this.stocksService.find(ticker.trim());
     if (existing) {
       throw new ConflictException(existing);
     }
@@ -66,7 +66,7 @@ export class StocksController {
     @Param('ticker') ticker: string,
     @Body() stock: Stock,
   ): Promise<Stock> {
-    const existing = await this.stocksService.get(ticker.trim());
+    const existing = await this.stocksService.find(ticker.trim());
     if (!existing) {
       throw new NotFoundException();
     }
@@ -110,5 +110,18 @@ export class StocksController {
   ): Promise<Stock[]> {
     return await this.stocksService.retrieveTopFiveForIndustry(industry);
   }
+
+  @Post('outstandingSharesReport/:sector')
+  @ApiOperation({
+    operationId: 'outstandingSharesReport',
+    summary: 'Reports on the total number of outstanding shares for a sector, grouped by Industry',
+    description: StocksController.REPORTING,    
+  })
+  async outstandingSharesReport(
+    @Param('sector') sector: string
+  ): Promise<any[]> {
+    return await this.stocksService.countBySector(sector);
+  }
+
 
 }

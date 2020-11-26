@@ -1,32 +1,32 @@
-import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Stock } from '../schemas/stock.schema';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { MongoRepository } from 'typeorm';
+import { Stock } from '../entities/stock.entity';
 import { StocksService } from './stocks.service';
+import * as repo from './mock.repository';
+
 
 describe('StocksService', () => {
   let service: StocksService;
+  let repositoryMock: MongoRepository<Stock>;
 
   const stock = new Stock({
-    Ticker: 'mock'
+    ticker: 'mock'
   });
 
-  class StockModel {
-    constructor() { }
-    static create = jest.fn().mockResolvedValue(stock);
-    static findOne = jest.fn().mockResolvedValue(stock);
-    static update = jest.fn().mockResolvedValue(stock);
-    static findOneAndDelete = jest.fn().mockResolvedValue(stock);
-  }
-
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: getModelToken('Stock'), useValue: StockModel },
+        { provide: getRepositoryToken(Stock), useFactory: repo.repositoryMockFactory },
         StocksService],
     })
       .compile();
 
     service = module.get<StocksService>(StocksService);
+    repositoryMock = module.get<MongoRepository<Stock>>(getRepositoryToken(Stock));
+
   });
 
   it('should be defined', () => {
@@ -34,25 +34,25 @@ describe('StocksService', () => {
   });
 
   it('should call findOne from get', async () => {
-    await service.get('mock');
-    expect(StockModel.findOne).toHaveBeenCalled();
+    await service.find('mock');
+    expect(repositoryMock.findOne).toHaveBeenCalled();
   });
 
   it('should call create from create', async () => {
     await service.create('mock');
-    expect(StockModel.create).toHaveBeenCalled();
+    expect(repositoryMock.create).toHaveBeenCalled();
   });
 
-  it('should call update from update', async () => {
+  it('should call update from update', async () => {        
     await service.update('mock', new Stock({
-      Ticker: 'not-relevant'
+      ticker: 'not-relevant'
     }));
-    expect(StockModel.update).toHaveBeenCalled();
+    expect(repositoryMock.findOneAndUpdate).toHaveBeenCalled();
   });
 
   it('should call findOneAndDelete from delete', async () => {
     await service.delete('mock');
-    expect(StockModel.findOneAndDelete).toHaveBeenCalled();
+    expect(repositoryMock.findOneAndDelete).toHaveBeenCalled();
   });
 
 });
