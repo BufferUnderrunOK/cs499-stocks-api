@@ -10,10 +10,10 @@ import { StocksModule } from './stocks/stocks.module';
         type: ('mongodb' as 'mongodb'),
         url: process.env.MONGO_URL || 'mongodb://localhost/market',
         loggerLevel: 'error',
-        entities: ["dist/**/*.entity{.ts,.js}"],
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        keepConnectionAlive: true
+        keepConnectionAlive: true,
+        autoLoadEntities: true
       })
     }),
     StocksModule

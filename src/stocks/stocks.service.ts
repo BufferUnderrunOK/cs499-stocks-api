@@ -4,7 +4,6 @@ import { Connection, getMongoRepository, MongoRepository, Repository } from 'typ
 import { getRepositoryToken, InjectConnection, InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
-@Dependencies(getRepositoryToken(Stock))
 export class StocksService {
   
   constructor(@InjectRepository(Stock) private readonly repository: MongoRepository<Stock>
