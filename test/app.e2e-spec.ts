@@ -12,6 +12,7 @@ describe('AppController (e2e)', () => {
   beforeAll(async (done) => {
     const url = await mongoUnit.start({
       dbName: 'test',
+      port: 28018,
       verbose: true
     });
     process.env.MONGO_URL = url;
@@ -28,7 +29,7 @@ describe('AppController (e2e)', () => {
         }
       ]
     });
-
+    
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();

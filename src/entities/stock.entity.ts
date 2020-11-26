@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
 
 @Entity({
-    name: 'stocks'
+    name: 'stocks'    
 })
 export class Stock {
     @ObjectIdColumn()

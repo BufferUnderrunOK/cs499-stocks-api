@@ -11,6 +11,9 @@ import { StocksModule } from './stocks/stocks.module';
         url: process.env.MONGO_URL || 'mongodb://localhost/market',
         loggerLevel: 'error',
         entities: ["dist/**/*.entity{.ts,.js}"],
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        keepConnectionAlive: true
       })
     }),
     StocksModule

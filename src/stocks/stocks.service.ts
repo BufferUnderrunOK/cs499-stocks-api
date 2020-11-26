@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Dependencies, Injectable } from '@nestjs/common';
 import { Stock } from '../entities/stock.entity'
 import { Connection, getMongoRepository, MongoRepository, Repository } from 'typeorm';
-import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
+import { getRepositoryToken, InjectConnection, InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
+@Dependencies(getRepositoryToken(Stock))
 export class StocksService {
   
   constructor(@InjectRepository(Stock) private readonly repository: MongoRepository<Stock>
