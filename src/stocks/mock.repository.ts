@@ -7,8 +7,8 @@ import { MongoRepository } from 'typeorm';
 // @ts-ignore
 export const repositoryMockFactory: () => MockType<MongoRepository<any>> = jest.fn(() => ({
     findOne: jest.fn(entity => entity),
-    create: jest.fn(entity => entity),
-    findOneAndUpdate: jest.fn(entity => entity),
+    save: jest.fn(entity => entity),
+    merge: jest.fn(entity => entity),
     findOneAndDelete: jest.fn(entity => entity)
 }));
 

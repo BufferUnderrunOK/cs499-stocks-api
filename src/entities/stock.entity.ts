@@ -1,6 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
 
+/**
+ * These property names should start with a lower case character and be converted by the ORM to match the database.
+ * They aren't, though. https://github.com/typeorm/typeorm/issues/1933
+ */
 @Entity({
     name: 'stocks'    
 })
@@ -10,45 +14,45 @@ export class Stock {
 
     @ApiProperty()
     @Column({ name: 'Ticker' })
-    ticker: string;
+    Ticker: string;
 
     @ApiPropertyOptional()
     @Column({ name: 'Profit Margin' })
-    profitMargin: number;
+    ProfitMargin: number;
 
     @ApiPropertyOptional()
     @Column({ name: 'Company' })
-    companyName: string;
+    Company: string;
 
     @ApiPropertyOptional()
     @Column({ name: 'Sector' })
-    sector: string;
+    Sector: string;
 
     @ApiPropertyOptional()
     @Column({ name: 'Industry' })
-    industry: string;
+    Industry: string;
 
     @ApiPropertyOptional()
     @Column({ name: '50-Day High' })
-    fiftyDayHigh: number;
+    FiftyDayHigh: number;
 
     @ApiPropertyOptional()
     @Column({ name: '50-Day Low' })
-    fiftyDayLow: number;
+    FiftyDayLow: number;
 
     @ApiPropertyOptional()
     @Column({ name: 'Price'})
-    price: number;
+    Price: number;
 
     @ApiPropertyOptional()
     @Column({name: 'Change'})
-    change: number;
+    Change: number;
 
     @ApiPropertyOptional()
     @Column({name: 'Market Cap'})
-    marketCap: number;
+    MarketCap: number;
 
-    constructor(data: Pick<Stock, 'ticker'>) {
+    constructor(data: Pick<Stock, 'Ticker'>) {
         Object.assign(this, data);
     }
 }

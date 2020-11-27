@@ -17,19 +17,20 @@ export class StocksService {
 
   async create(ticker: string): Promise<Stock> {
     const stockDoc = this.getTickerFilter(ticker);
-    return await this.repository.create(stockDoc);
+    return await this.repository.save(stockDoc);
   }
 
   async update(ticker: string, stock: Stock): Promise<Stock> {
-    const result = await this.repository
-      .findOneAndUpdate(this.getTickerFilter(ticker), stock, {returnOriginal: true});
-      return result.value;
+    const current = await this.find(ticker);
+    const merged = await this.repository.merge(current, stock);
+    const result = await this.repository.save(merged);
+    return result;
   }
 
   async delete(ticker: string): Promise<number> {
     let result = await this.repository
       .findOneAndDelete(this.getTickerFilter(ticker));
-      return result.ok;
+      return result.value;
   }
 
   async countBySector(sector: string) {
@@ -99,7 +100,7 @@ export class StocksService {
 
   private getTickerFilter(tickerSymbol: string) {
     return new Stock({
-      ticker: tickerSymbol,
+      Ticker: tickerSymbol,
     });
   }
 }

@@ -11,7 +11,7 @@ describe('StocksService', () => {
   let repositoryMock: MongoRepository<Stock>;
 
   const stock = new Stock({
-    ticker: 'mock'
+    Ticker: 'mock'
   });
 
   beforeEach(async () => {
@@ -38,16 +38,16 @@ describe('StocksService', () => {
     expect(repositoryMock.findOne).toHaveBeenCalled();
   });
 
-  it('should call create from create', async () => {
+  it('should call save from create', async () => {
     await service.create('mock');
-    expect(repositoryMock.create).toHaveBeenCalled();
+    expect(repositoryMock.save).toHaveBeenCalled();
   });
 
   it('should call update from update', async () => {        
     await service.update('mock', new Stock({
-      ticker: 'not-relevant'
+      Ticker: 'not-relevant'
     }));
-    expect(repositoryMock.findOneAndUpdate).toHaveBeenCalled();
+    expect(repositoryMock.merge).toHaveBeenCalled();
   });
 
   it('should call findOneAndDelete from delete', async () => {

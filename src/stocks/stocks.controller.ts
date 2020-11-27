@@ -4,21 +4,17 @@ import {
   Controller,
   Delete,
   Get,
-  Header,
   HttpException,
   HttpStatus,
-  Logger,
   NotFoundException,
   Param,
   Post,
   Put,
-  Req,
-  Request,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
-import { ApiAcceptedResponse, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { NotFoundInterceptor } from '../notfound.interceptor';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Stock } from '../entities/stock.entity';
+import { NotFoundInterceptor } from '../notfound.interceptor';
 import { StocksService } from './stocks.service';
 
 const prefixSpecified = 'stocks/api/v1.1';
@@ -91,7 +87,7 @@ export class StocksController {
   @ApiOperation({
     operationId: 'stockReport',
     summary: 'Select and present specific stock summary information by a user-derived list of ticker symbols.',
-    description: StocksController.REPORTING,    
+    description: StocksController.REPORTING,
   })
   async stockReport(
     @Body() list: string[]
@@ -103,7 +99,7 @@ export class StocksController {
   @ApiOperation({
     operationId: 'industryReport',
     summary: 'Report a portfolio of five top stocks by a user-derived industry selection.',
-    description: StocksController.REPORTING,    
+    description: StocksController.REPORTING,
   })
   async industryReport(
     @Param('industry') industry: string
@@ -115,7 +111,7 @@ export class StocksController {
   @ApiOperation({
     operationId: 'outstandingSharesReport',
     summary: 'Reports on the total number of outstanding shares for a sector, grouped by Industry',
-    description: StocksController.REPORTING,    
+    description: StocksController.REPORTING,
   })
   async outstandingSharesReport(
     @Param('sector') sector: string

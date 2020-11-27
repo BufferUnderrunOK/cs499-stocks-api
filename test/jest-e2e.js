@@ -5,6 +5,6 @@ module.exports = {
   testRegex: ".e2e-spec.ts$",
   transform: {
     "^.+\\.ts$": "ts-jest"
-  },
+  },  
   verbose: true
 }
