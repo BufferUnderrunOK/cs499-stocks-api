@@ -4,17 +4,20 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
-import { ApiAcceptedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { NotFoundInterceptor } from 'src/notfound.interceptor';
-import { Stock } from 'src/schemas/stock.schema';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Stock } from '../entities/stock.entity';
+import { NotFoundInterceptor } from '../notfound.interceptor';
 import { StocksService } from './stocks.service';
 
-const prefixSpecified = 'stocks/api/v1.0';
+const prefixSpecified = 'stocks/api/v1.1';
 
 @ApiTags("Barrett W Nuzum's Stock API")
 @Controller(prefixSpecified)
@@ -22,32 +25,34 @@ const prefixSpecified = 'stocks/api/v1.0';
 export class StocksController {
   static BASIC_CRUD =
     'Enable specific CRUD functionality in a developed RESTful API framework. Use the example URIs linked in the prompt.';
-  constructor(private readonly stocksService: StocksService) {}
+  static REPORTING =
+    'Enable advanced lookup functionality using the MongoDB Aggregation Framework';
+  constructor(private readonly stocksService: StocksService) { }
 
-  @Get(':ticker')
+  @Get('stock/:ticker')
   @ApiOperation({
     summary: 'Retrieve stock document for a given ticker symbol',
     description: StocksController.BASIC_CRUD,
   })
   async read(@Param('ticker') ticker: string): Promise<Stock> {
-    return await this.stocksService.get(ticker);
+    return await this.stocksService.find(ticker);
   }
 
-  @Post(':ticker')
+  @Post('stock/:ticker')
   @ApiOperation({
     summary:
       'Create new stock document for a ticker symbol, from data provided with the request.',
     description: StocksController.BASIC_CRUD,
   })
   async create(@Param('ticker') ticker: string): Promise<Stock> {
-    const existing = await this.stocksService.get(ticker.trim());
+    const existing = await this.stocksService.find(ticker.trim());
     if (existing) {
       throw new ConflictException(existing);
     }
     return await this.stocksService.create(ticker.trim());
   }
 
-  @Put(':ticker')
+  @Put('stock/:ticker')
   @ApiOperation({
     summary:
       'Update a stock document for a ticker symbol, from data provided with the body.',
@@ -57,10 +62,19 @@ export class StocksController {
     @Param('ticker') ticker: string,
     @Body() stock: Stock,
   ): Promise<Stock> {
+    const existing = await this.stocksService.find(ticker.trim());
+    if (!existing) {
+      throw new NotFoundException();
+    }
+
+    if (!this.stocksService.isDifference(existing, stock)) {
+      throw new HttpException('Not Modified', HttpStatus.NOT_MODIFIED);
+    }
+
     return await this.stocksService.update(ticker, stock);
   }
 
-  @Delete(':ticker')
+  @Delete('stock/:ticker')
   @ApiOperation({
     summary: 'Delete a stock document for a ticker symbol',
     description: StocksController.BASIC_CRUD,
@@ -68,4 +82,42 @@ export class StocksController {
   async delete(@Param('ticker') ticker: string) {
     return await this.stocksService.delete(ticker);
   }
+
+  @Post('stockReport')
+  @ApiOperation({
+    operationId: 'stockReport',
+    summary: 'Select and present specific stock summary information by a user-derived list of ticker symbols.',
+    description: StocksController.REPORTING,
+  })
+  async stockReport(
+    @Body() list: string[]
+  ): Promise<Stock[]> {
+    return await this.stocksService.retrieveSummaries(list);
+  }
+
+  @Post('industryReport/:industry')
+  @ApiOperation({
+    operationId: 'industryReport',
+    summary: 'Report a portfolio of five top stocks by a user-derived industry selection.',
+    description: StocksController.REPORTING,
+  })
+  async industryReport(
+    @Param('industry') industry: string
+  ): Promise<Stock[]> {
+    return await this.stocksService.retrieveTopFiveForIndustry(industry);
+  }
+
+  @Post('outstandingSharesReport/:sector')
+  @ApiOperation({
+    operationId: 'outstandingSharesReport',
+    summary: 'Reports on the total number of outstanding shares for a sector, grouped by Industry',
+    description: StocksController.REPORTING,
+  })
+  async outstandingSharesReport(
+    @Param('sector') sector: string
+  ): Promise<any[]> {
+    return await this.stocksService.countBySector(sector);
+  }
+
+
 }

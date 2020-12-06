@@ -1,14 +1,15 @@
-import { Catch, Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Stock, StockSchema } from '../schemas/stock.schema';
+import { Module } from '@nestjs/common';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { Stock } from '../entities/stock.entity';
 import { StocksController } from './stocks.controller';
 import { StocksService } from './stocks.service';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Stock.name, schema: StockSchema }]),
+  imports: [TypeOrmModule.forFeature([Stock])
   ],
   controllers: [StocksController],
-  providers: [StocksService],
+  providers: [
+    StocksService
+  ],
 })
 export class StocksModule {}

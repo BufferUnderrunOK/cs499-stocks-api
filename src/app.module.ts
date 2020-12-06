@@ -1,15 +1,24 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { StocksModule } from './stocks/stocks.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/market', {
-      loggerLevel: 'debug',
+    TypeOrmModule.forRootAsync({
+      name: 'default',
+      useFactory: () => ({
+        type: ('mongodb' as 'mongodb'),
+        url: process.env.MONGO_URL || 'mongodb://localhost/market',
+        loggerLevel: 'error',
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        keepConnectionAlive: true,
+        autoLoadEntities: true
+      })
     }),
-    StocksModule,
+    StocksModule
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
