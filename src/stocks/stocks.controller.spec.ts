@@ -7,7 +7,7 @@ import * as repo from './mock.repository';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 const stock = new Stock({
-  ticker: 'foo'
+  Ticker: 'foo'
 });
 
 describe('StocksController', () => {
@@ -48,7 +48,7 @@ describe('StocksController', () => {
   });
 
   it('should throw exception if duplicate on create', async () => {
-    stock.ticker = 'foobar';    
+    stock.Ticker = 'foobar';    
     try {
       await controller.create('foobar');
     } catch (ConflictException) {
